@@ -1,0 +1,23 @@
+# Skyramp Workspace Configuration
+workspace:
+  repoName: sxarsky/coder
+  repoUrl: https://github.com/sxarsky/coder
+metadata:
+  schemaVersion: v1
+  mcpVersion: v0.2.10-rc.1
+  executorVersion: v1.3.32
+services:
+  - serviceName: coder-server
+    language: python
+    framework: pytest
+    testDirectory: tests/skyramp
+    api:
+      schemaPath: http://localhost:8093/swagger/doc.json
+      authType: token
+      authHeader: Coder-Session-Token
+      authScheme: ""
+      baseUrl: http://localhost:8093
+    runtimeDetails:
+      serverStartCommand: docker compose -f deployment-testbot/docker-compose.yml up -d --build
+      runtime: docker
+      dockerNetwork: deployment-testbot_default

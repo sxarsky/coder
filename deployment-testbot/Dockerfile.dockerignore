@@ -1,0 +1,32 @@
+# Per-dockerfile .dockerignore for the testbot no-embed build.
+# BuildKit reads <dockerfile>.dockerignore from the context root, which
+# overrides the repo-root .dockerignore for this specific Dockerfile.
+#
+# Strategy: exclude only what the Go compiler provably never needs.
+#
+# site/site.go (always compiled, no build-tag guard) embeds:
+#   //go:embed static/error.html
+#   //go:embed static/oauth2allow.html
+#   //go:embed permissions.json
+# So site/static/ and site/permissions.json must be present.
+# site/src/ and site/e2e/ are TypeScript/React — not Go, safe to exclude.
+# site/out/ is the compiled frontend — only needed for -tags embed.
+
+# VCS history
+.git/
+
+# JS/TypeScript source and compiled output — never touched by go build
+node_modules/
+site/node_modules/
+site/src/
+site/e2e/
+site/scripts/
+site/test/
+site/out/
+
+# Previous build outputs
+build/
+
+# Infra configs not part of the Go module
+dogfood/
+.github/

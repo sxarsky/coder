@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: coder
+      POSTGRES_USER: coder
+      POSTGRES_PASSWORD: coder
+    volumes:
+      - coder-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coder"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  coder:
+    build:
+      context: ${UPSTREAM_CHECKOUT:-..}
+      dockerfile: deployment-testbot/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      # host 8093 -> container 3000
+      - "8093:3000"
+    environment:
+      CODER_PG_CONNECTION_URL: "postgresql://coder:coder@postgres:5432/coder?sslmode=disable"
+      CODER_HTTP_ADDRESS: "0.0.0.0:3000"
+      CODER_ACCESS_URL: "http://localhost:8093"
+      CODER_SWAGGER_ENABLE: "true"
+      CODER_TELEMETRY_ENABLE: "false"
+      CODER_VERBOSE: "false"
+    restart: unless-stopped
+
+volumes:
+  coder-postgres:
