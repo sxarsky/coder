@@ -19,6 +19,9 @@ import (
 // @Tags General
 // @Success 200 {object} codersdk.UpdateCheckResponse
 // @Router /api/v2/updatecheck [get]
+//
+// The response reports the newest released version and whether the current
+// deployment is up to date.
 func (api *API) updateCheck(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
